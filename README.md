@@ -2,7 +2,7 @@
 A challenging time-series dataset consisting of daily sales data, kindly provided by one of the largest Russian software firms - 1C Company, 
 is used to predict total sales for every product and store in the next month.
 
-You are provided with daily historical sales data. The task is to forecast the total amount of products sold in every shop for the test set. Note that the list of shops and products slightly changes every month. Creating a robust model that can handle such situations is part of the challenge.
+Daily historical sales data is provided. The task is to forecast the total amount of products sold in every shop for the test set. Note that the list of shops and products slightly changes every month. Creating a robust model that can handle such situations is part of the challenge.
 
 File descriptions :
     sales_train.csv - the training set. Daily historical data from January 2013 to October 2015.
@@ -31,4 +31,7 @@ This dataset has approximately 3E6 rows and several features from which several 
 The key elements of this analysis are the feature interactions, features based on trends over time, encoded features, and lag features. XGBoost was used in the validation and prediction. The hyperparameters are roughly optimal but could be further tuned with RandomizedSearchCV and GridsearchCV.
 
 The final RMSE score produced is approx. 0.92.
+
+Link to Kaggle compettition:
+https://www.kaggle.com/c/competitive-data-science-final-project/overview
 
