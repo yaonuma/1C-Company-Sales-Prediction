@@ -57,51 +57,34 @@ def lag_feature(df, lags, col):
     return df
 
 
+def convert_to_sparse(df, exclude_cols=[]):
+    for (columnName, columnData) in df.iteritems():
+        if columnName in exclude_cols:
+            continue
+        df[columnName] = pd.arrays.SparseArray(columnData.values, dtype='float16')
+    return df
+
+
 def text_based_features(df, cols):
-    # create text based features
+
     # text based feature generation - TF
     for col in cols:
         df[col] = df[col].apply(lambda x: re.sub('\W', ' ', x))
 
-        # text based feature generation - TF
-        countVec = CountVectorizer(max_features=5000, stop_words='english', min_df=.01, max_df=.90)
-
-        # text based feature generation - TF
+        # text based feature generation - TF-idf
+        countVec = CountVectorizer(max_features=10, stop_words='english', ngram_range=(1,2))
         countVec.fit(df[col])
         countVec_count = countVec.transform(df[col])
-        occ = np.asarray(countVec_count.sum(axis=0)).ravel().tolist()
-        tf = pd.DataFrame({'term': countVec.get_feature_names(), 'TF': occ / np.sum(occ)})
-        d_dict_col_tf = {tf['term'].values[i]: tf['TF'].values[i] for i in range(len(tf['term'].values))}
-
-        # text based feature generation - TF-idf
         Transformer = TfidfTransformer()
         Weights = Transformer.fit_transform(countVec_count)
-        WeightsFin = np.asarray(Weights.mean(axis=0)).ravel().tolist()
-        WeightFrame = pd.DataFrame({'term': countVec.get_feature_names(), 'TF-idf': WeightsFin})
-        d_dict_col_tfidf = {WeightFrame['term'].values[i]: WeightFrame['TF-idf'].values[i] for i in
-                            range(len(WeightFrame['term'].values))}
 
-        del WeightFrame, Weights, countVec, tf
+        # add to tfidf to dataframe and concat to original df
+        tf = pd.DataFrame(Weights.toarray(), columns=[item+'_tfidf' for item in countVec.get_feature_names()])
+        tf = convert_to_sparse(tf)
+        df = pd.concat([df,tf], axis=1).drop(columns=[col], axis=1)
+
+        del Weights, countVec, tf
         gc.collect()
-
-        # the sum of the TF values in the document is used as a composite item_category_name score for the document
-
-        def f(x):
-            total = 0
-            for item in x.split(' '):
-                word = re.sub(r'\s+', '', item)
-                try:
-                    y = d_dict[word]
-                except:
-                    y = 0
-                total += y
-            return total
-
-        d_dict = d_dict_col_tf
-        df[col + 'TF'] = df[col].apply(f)
-        d_dict = d_dict_col_tfidf
-        df[col + 'TFIDF'] = df[col].apply(f)
-        df = df.drop(columns=[col], axis=1)
 
     return df
 
