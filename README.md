@@ -29,7 +29,7 @@ Data fields :
     
 Submissions are evaluated by root mean squared error (RMSE). True target values are clipped into [0,20] range.
 
-This dataset has approximately 3E6 rows and several features from which several other useful features are necessary to achieve a good RMSE score. For that reason, a typical laptop may not suffice for local runs. This analysis was debugged locally and refined on a VM instance with 16cpus/64GB RAM on GoogleCloud.
+This dataset has approximately 3E6 training examples and several features from which several other useful features are necessary to achieve a good RMSE score. For that reason, a typical laptop may not suffice for local runs. This analysis was debugged locally and refined on a VM instance with 16cpus/64GB RAM on GoogleCloud.
 
 The key elements of this analysis are the feature interactions, features based on trends over time, encoded features, and lag features. XGBoost was used in the validation and prediction. The hyperparameters are roughly optimal but could be further tuned with RandomizedSearchCV and GridsearchCV.
 
